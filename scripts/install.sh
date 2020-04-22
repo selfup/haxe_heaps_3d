@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-haxelib install build.hxml
+haxelib install main.hxml

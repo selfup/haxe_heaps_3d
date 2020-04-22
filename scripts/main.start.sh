@@ -2,6 +2,6 @@
 
 set -e
 
-haxe build.hxml
+haxe main.hxml
 
 hl main.hl
