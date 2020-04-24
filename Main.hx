@@ -7,18 +7,11 @@ class Main extends hxd.App {
 
 	override function init() {
 		world = new h3d.scene.World(64, 128, s3d);
-		var tree = world.loadModel(hxd.Res.tree);
-		var rock = world.loadModel(hxd.Res.rock);
+
+		var cube = world.loadModel(hxd.Res.xx);
 
 		for (i in 0...1000) {
-			var worldModel = Std.random(2) == 0 ? tree : rock;
-			var x = Math.random() * 128;
-			var y = Math.random() * 128;
-			var z = 0;
-			var scale = 1.2 + hxd.Math.srand(0.4);
-			var roation = hxd.Math.srand(Math.PI);
-
-			world.add(worldModel, x, y, z, roation, scale);
+			addToWorld(cube);
 		}
 
 		world.done();
@@ -29,20 +22,47 @@ class Main extends hxd.App {
 		s3d.camera.target.set(72, 72, 0);
 		s3d.camera.pos.set(120, 120, 40);
 
+		shadows();
+
+		#if castle
+		new hxd.inspect.Inspector(s3d);
+		#end
+
+		snow();
+
+		s3d.camera.zNear = 1;
+		s3d.camera.zFar = 100;
+		new h3d.scene.CameraController(s3d).loadFromCamera();
+	}
+
+	function snow() {
+		var parts = new h3d.parts.GpuParticles(world);
+		var group = parts.addGroup();
+		group.size = 0.2;
+		group.gravity = 1;
+		group.life = 10;
+		group.nparts = 10000;
+		group.emitMode = CameraBounds;
+		parts.volumeBounds = h3d.col.Bounds.fromValues(-20, -20, 15, 40, 40, 40);
+	}
+
+	function shadows() {
 		shadow = s3d.renderer.getPass(h3d.pass.DefaultShadowMap);
 		shadow.size = 2048;
 		shadow.power = 200;
 		shadow.blur.radius = 0;
 		shadow.bias *= 0.1;
 		shadow.color.set(0.7, 0.7, 0.7);
+	}
 
-		#if castle
-		new hxd.inspect.Inspector(s3d);
-		#end
+	function addToWorld(element) {
+		var x = Math.random() * 128;
+		var y = Math.random() * 128;
+		var z = 0;
+		var scale = 1.0;
+		var rotation = hxd.Math.srand(Math.PI);
 
-		s3d.camera.zNear = 1;
-		s3d.camera.zFar = 100;
-		new h3d.scene.CameraController(s3d).loadFromCamera();
+		world.add(element, x, y, z, scale, rotation);
 	}
 
 	static function main() {
